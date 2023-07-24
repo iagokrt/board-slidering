@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<title></title>
+<style type="text/css">
+  /* The styles from the provided code go here */
+
+  /* Add any additional web-specific styles here */
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+  }
+
+  /* Additional styles for the confetti animation */
+  .container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .confetti {
+    width: 15px;
+    height: 15px;
+    background-color: #f2d74e;
+    position: absolute;
+    left: 50%;
+    animation: confetti 5s ease-in-out -2s infinite;
+    transform-origin: left top;
+  }
+
+  .confetti:nth-child(1) {
+    background-color: #f2d74e;
+    left: 10%;
+    animation-delay: 0;
+  }
+
+  /* Add styles for the other .confetti:nth-child elements */
+
+  /* Confetti animation keyframes (same as in the provided code) */
+</style>
+</head>
+<body>
+  <!-- The rest of the provided code goes here -->
+
+  <!-- Replace the div with container class with this div -->
+  <div class="container">
+    <div class="confetti"></div>
+    <!-- Add other .confetti elements here -->
+  </div>
+
+  <!-- Confetti animation keyframes (same as in the provided code) -->
+
+</body>
+</html>

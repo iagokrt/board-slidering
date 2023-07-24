@@ -1,0 +1,144 @@
+* {
+  /* font-family: 'Belanosima', sans-serif; */
+  font-family: "Rubik", sans-serif;
+}
+
+body {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #5b8fb9;
+}
+body.hidden {
+  visibility: hidden;
+}
+
+main {
+  display: flex;
+}
+
+aside {
+  /* background: #f1f1f1; */
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/** debug menu**/
+.container {
+  position: relative;
+}
+
+/* #intro {
+  color: #fff;
+} */
+
+h1#debugMenu {
+  color: white;
+  background-color: rgb(187, 66, 66);
+  text-align: center;
+  border-radius: 8px;
+  padding: 14px 6px;
+  font-size: 12px;
+}
+h1#debugMenu:hover {
+  cursor: pointer;
+}
+.settings {
+  display: none;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.container.show-settings .settings {
+  display: block;
+}
+
+.settings .title {
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  /* text-transform: uppercase; */
+
+  padding: 4px 12px;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  margin-top: 15px;
+  /* font-size: 1.5rem; */
+  font-size: 0.8rem;
+}
+button:hover {
+  transform: scale(1.02);
+  transition: all 0.25s linear;
+  background: #fff;
+  /* text-decoration: underline; */
+  cursor: pointer;
+}
+.button {
+  border-radius: 9px;
+  color: #0f0e0e;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+/* game canvas */
+table {
+  font-size: 2rem;
+  color: #fff;
+  background-color: #000111;
+  padding: 14px;
+}
+table * {
+  padding: 14px;
+}
+
+table td {
+  background: skyblue;
+  padding: 18px;
+}
+table td:hover {
+  background: blue;
+  cursor: pointer;
+  transform: scale(1.08);
+  transition: all 0.2s linear;
+}
+/* CSS for the floating animation - selected item */
+@keyframes floating {
+  0% {
+    transform: scale(1); /* Normal size */
+  }
+  50% {
+    transform: scale(1.05); /* Slightly scaled up */
+  }
+  100% {
+    transform: scale(1); /* Back to normal size */
+  }
+}
+table td.selected {
+  background: rgb(23, 93, 95);
+  cursor: pointer;
+  transform: scale(1.05);
+  transition: all 0.2s linear;
+  animation: floating 2s infinite; /* 2 seconds duration, infinite loop */
+}
