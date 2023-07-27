@@ -11,6 +11,8 @@ import confetti from "canvas-confetti";
  * It's endgame
  */
 // this.availableElements = ["♤", "♧", "♢", "♡"];
+// this.availableElements = ["1", "2", "3", "4"];
+// this.availableElements = ["a", "b", "c", "d"];
 
 var PIECES_MAP = {
   // count distribution
@@ -48,12 +50,13 @@ class GameBoard {
     });
 
     this.startGameButton = document.getElementById("startGame");
-    this.introSection = document.getElementById("intro");
-
+    // this.introSection = document.getElementById("intro");
+    this.timerElement = document.getElementById("timer");
     this.startGameButton.addEventListener("click", () => {
       this.populateBoard();
       this.startGameButton.style.display = "none";
-      this.introSection.style.display = "none";
+      this.timerElement.style.display = "block";
+      this.initTimer();
     });
 
     this.populateGameButton = document.getElementById("populateGame");
@@ -63,7 +66,7 @@ class GameBoard {
 
     this.attemptWinButton = document.getElementById("winnerWinner");
     this.attemptWinButton.addEventListener("click", () => {
-      if (this.checkWinCondition()) {
+      if (this.checkEndgameState()) {
         console.log("Congratulations! You won!");
       } else {
         console.log("Keep trying. You haven't won yet.");
@@ -102,12 +105,45 @@ class GameBoard {
     //   // console.log("this:", this);
     //   // console.log("Test!");
     // });
+    // this.stopButton = document.getElementById("stop");
+    // this.stopButton.addEventListener("click", () => {
+    //   this.stopTimer();
+    // });
+
     this.debugMenu = document.getElementById("debugMenu");
     this.container = document.querySelector(".container");
 
     this.debugMenu.addEventListener("click", () => {
       this.container.classList.toggle("show-settings");
     });
+  }
+
+  initTimer() {
+    let seconds = 0;
+    let minutes = 0;
+
+    const timerElement = document.getElementById("timer");
+
+    function updateTimer() {
+      seconds++;
+      if (seconds === 60) {
+        seconds = 0;
+        minutes++;
+      }
+
+      const formattedTime = `${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      timerElement.textContent = formattedTime;
+    }
+
+    timerElement.intervalId = setInterval(updateTimer, 1000);
+  }
+
+  stopTimer() {
+    const timerElement = document.getElementById("timer");
+    clearInterval(timerElement.intervalId);
+    this.stoppedTime = timerElement.textContent;
   }
 
   handleClickEvent(event) {
@@ -231,6 +267,8 @@ class GameBoard {
     if (this.checkWinCondition()) {
       console.log("Congratulations! You won!");
       this.explodeConfetti();
+      this.stopTimer();
+      this.displayCongratulationMessage();
     } else {
       console.log("Keep trying. You haven't won yet.");
     }
@@ -271,6 +309,18 @@ class GameBoard {
     }, 250);
   }
 
+  displayCongratulationMessage() {
+    this.congratulationsText = document.getElementById("congratulations-h4");
+    this.congratulationsText.style.display = "block";
+
+    this.congratulationsTextDescription = document.getElementById(
+      "congratulations-p"
+    );
+    this.congratulationsTextDescription.style.display = "block";
+
+    this.createWhatsAppLink();
+  }
+
   swapElements(row1, col1, row2, col2) {
     const temp = this.board[row1][col1];
     this.board[row1][col1] = this.board[row2][col2];
@@ -304,19 +354,33 @@ class GameBoard {
       const [_, row1, col1] = elementsToSwap[0].id.split("-").map(Number);
       const [__, row2, col2] = elementsToSwap[1].id.split("-").map(Number);
 
-      // Perform the swapElements when two elements are selected
-      this.swapElements(row1, col1, row2, col2);
+      // Add a small delay before clearing the selectedElementsToSwap array and the selection animation
+      setTimeout(() => {
+        // Perform the swapElements when two elements are selected
+        this.swapElements(row1, col1, row2, col2);
 
-      this.checkEndgameState();
-      // Clear the selectedElementsToSwap array and the selection animation
-      this.selectedElementsToSwap.forEach((el) =>
-        el.classList.remove("selected")
-      );
-      this.selectedElementsToSwap = [];
+        this.checkEndgameState();
+        // Clear the selectedElementsToSwap array and the selection animation
+        this.selectedElementsToSwap.forEach((el) =>
+          el.classList.remove("selected")
+        );
+        this.selectedElementsToSwap = [];
 
-      // Update the game board display
-      this.renderBoard();
+        // Update the game board display
+        this.renderBoard();
+      }, 700); // Change the delay time (in milliseconds) as neededay
     }
+  }
+
+  // share via whatsApp
+  // JavaScript
+  createWhatsAppLink() {
+    // Venci em 00:07, e você? Aceita o desafio? <link>
+
+    var shareText = `Venci em ${this.stoppedTime}. E você? Aceita o desafio?!? https://mr2n8s.csb.app/`;
+    const whatsappLink = document.getElementById("whatsappLink");
+    const encodedText = encodeURIComponent(shareText);
+    whatsappLink.href = `https://api.whatsapp.com/send?text=${encodedText}`;
   }
 
   // debug methods:

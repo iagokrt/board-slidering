@@ -74,6 +74,15 @@ h1#debugMenu:hover {
   padding: 4px 12px;
 }
 
+.congratulations {
+  text-align: center;
+  color: #fff;
+}
+#congratulations-h4,
+#congratulations-p {
+  display: none;
+}
+
 button {
   padding: 0;
   border: 0;
@@ -103,6 +112,12 @@ button:hover {
 }
 
 /* game canvas */
+#board {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 table {
   font-size: 2rem;
   color: #fff;
@@ -129,7 +144,7 @@ table td:hover {
     transform: scale(1); /* Normal size */
   }
   50% {
-    transform: scale(1.05); /* Slightly scaled up */
+    transform: scale(1.09); /* Slightly scaled up */
   }
   100% {
     transform: scale(1); /* Back to normal size */
