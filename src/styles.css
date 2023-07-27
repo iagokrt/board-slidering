@@ -83,6 +83,15 @@ h1#debugMenu:hover {
   display: none;
 }
 
+.whatsapp-share-link {
+  color: #f1f1f1;
+}
+
+.whatsapp-ico {
+  width: 16px;
+  height: 16px;
+}
+
 button {
   padding: 0;
   border: 0;
