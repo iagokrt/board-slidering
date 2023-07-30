@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Belanosima&family=Rubik:wght@400;600&display=swap"
     rel="stylesheet" />
-  <!-- <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script> -->
 </head>
 
 <body class="hidden dark-theme">
@@ -22,15 +21,25 @@
   </header>
   <div id="game">
     <main>
-      <aside id="start-game-button">
-        <div class="main-menu flex">
-          <button id="startGame" class="button" type="button">
-            Start Game
-          </button>
-        </div>
-      </aside>
+      <div id="menu-buttons">
+        <aside id="start-game-button">
+          <div class="main-menu flex">
+            <button id="startGame" class="button" type="button">
+              Start Game
+            </button>
+          </div>
+        </aside>
+  
+        <aside id="start-tutorial-button">
+          <div class="main-menu flex">
+            <button id="level 1" class="button" type="button">
+              tutorial
+            </button>
+          </div>
+        </aside>
+      </div>
 
-      <aside class="container" id="debug-settings-menu">
+      <aside class="debug-menu" id="debug-settings-menu">
         <h1 id="debugMenu" style="display: none;">Open debug menu</h1>
         <aside class="settings">
           <h1 class="title">DEBUG</h1>

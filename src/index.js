@@ -1,8 +1,5 @@
 import "./styles.css";
 import confetti from "canvas-confetti";
-// function explodeConfetti() {
-
-// }
 /**
  * game consist in a
  * 4x4 matrix with 4 types of pieces: a, b, c, d
@@ -38,9 +35,9 @@ class GameBoard {
   constructor() {
     this.board = this.createEmptyBoard();
     this.availableElements = PIECES_MAP.availableElements;
-    this.menuSettings();
     this.selectedElementsToSwap = []; // store selected elements: max 2
     this.confettiContainer = document.getElementById("confettiContainer");
+    this.menuSettings();
   }
 
   menuSettings() {
@@ -61,16 +58,32 @@ class GameBoard {
     this.populateGameButton = getElement("populateGame");
     this.populateGameButton.addEventListener("click", this.populateBoard.bind(this));
 
-    this.attemptWinButton = getElement("attemptWin");
-    this.attemptWinButton.addEventListener("click", () => {
-      if (this.checkEndgameState()) {
-        console.log("Congratulations! You won!");
-      } else {
-        console.log("Keep trying. You haven't won yet.");
-      }
+    // Game Interactions
+    this.swapElementsButton = getElement("swap-elements");
+    this.swapElementsButton.addEventListener("click", () => {
+      /**
+       * Static Swap Test:
+       * example: swap at positions (0, 0) and (2, 2);
+       */
+      this.swapElements(0, 0, 2, 2);
+    });
+
+    // theme handler
+    this.themeToggleButton = document.querySelector('#toggle-theme span');
+    this.themeToggleButton.addEventListener('click', function () {
+      document.body.classList.toggle('dark-theme');
+      // Optionally, you can add logic to save the user's preference in LocalStorage.
+      // Example: localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
     });
 
     // Debug Functions
+    this.debugMenuButton = getElement("debugMenu");
+    this.debugMenuSettingsElement = document.querySelector(".settings");
+
+    this.debugMenuButton.addEventListener("click", () => {
+      this.debugMenuSettingsElement.classList.toggle("show-settings");
+    });
+
     this.logEmptyBoardButton = getElement("logEmptyBoard");
     this.logEmptyBoardButton.addEventListener("click", () => {
       console.table(this.board);
@@ -86,59 +99,15 @@ class GameBoard {
     this.hackBoardButton = getElement("hack");
     this.hackBoardButton.addEventListener("click", this.hackBoard.bind(this));
 
-    // Interactions
-    this.swapElementsButton = getElement("swap-elements");
-    this.swapElementsButton.addEventListener("click", () => {
-      /**
-       * Static Swap Test:
-       * example: swap at positions (0, 0) and (2, 2);
-       */
-      this.swapElements(0, 0, 2, 2);
-    });
-
-    this.debugMenu = getElement("debugMenu");
-    this.container = document.querySelector(".container");
-
-    this.debugMenu.addEventListener("click", () => {
-      this.container.classList.toggle("show-settings");
-    });
-
-    // theme handler
-    this.themeToggleButton = document.querySelector('#toggle-theme span');
-    this.themeToggleButton.addEventListener('click', function () {
-      document.body.classList.toggle('dark-theme');
-      // Optionally, you can add logic to save the user's preference in LocalStorage.
-      // Example: localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-    });
-  }
-
-
-  initTimer() {
-    let seconds = 0;
-    let minutes = 0;
-
-    const timerElement = document.getElementById("timer");
-
-    function updateTimer() {
-      seconds++;
-      if (seconds === 60) {
-        seconds = 0;
-        minutes++;
+    this.attemptWinButton = getElement("attemptWin");
+    this.attemptWinButton.addEventListener("click", () => {
+      if (this.checkEndgameState()) {
+        console.log("Congratulations! You won!");
+      } else {
+        console.log("Keep trying. You haven't won yet.");
       }
+    });
 
-      const formattedTime = `${minutes
-        .toString()
-        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-      timerElement.textContent = formattedTime;
-    }
-
-    timerElement.intervalId = setInterval(updateTimer, 1000);
-  }
-
-  stopTimer() {
-    const timerElement = document.getElementById("timer");
-    clearInterval(timerElement.intervalId);
-    this.stoppedTime = timerElement.textContent;
   }
 
   handleClickEvent(event) {
@@ -185,6 +154,49 @@ class GameBoard {
     }
   }
 
+  swapElements(row1, col1, row2, col2) {
+    const temp = this.board[row1][col1];
+    this.board[row1][col1] = this.board[row2][col2];
+    this.board[row2][col2] = temp;
+  }
+
+  handleElementSelection(domElement) {
+    var elementsToSwap = this.selectedElementsToSwap; // max 2;
+
+    if (elementsToSwap.length === 0) {
+      // No elements are selected yet, selecting the first element to swap
+      var firstSelected = domElement;
+      domElement.classList.add("selected");
+      this.selectedElementsToSwap.push(firstSelected);
+    } else if (elementsToSwap.length === 1) {
+      // One element is already selected, selecting the second element to swap
+      var secondSelected = domElement;
+      secondSelected.classList.add("selected");
+      this.selectedElementsToSwap.push(secondSelected);
+
+      // Extract the row and column indices from the first and second DOM element IDs
+      const [_, row1, col1] = elementsToSwap[0].id.split("-").map(Number);
+      const [__, row2, col2] = elementsToSwap[1].id.split("-").map(Number);
+
+      // Add a small delay before swapping elements
+      setTimeout(() => {
+        // Perform the swapElements when two elements are selected
+        this.swapElements(row1, col1, row2, col2);
+
+        // Every time we swap elements we call checkEndgameSate() to check Win Condition
+        this.checkEndgameState();
+        // Clear the selectedElementsToSwap array and the selection animation
+        this.selectedElementsToSwap.forEach((el) =>
+          el.classList.remove("selected")
+        );
+        this.selectedElementsToSwap = [];
+
+        // Update the game board display
+        this.renderBoard();
+      }, 700); // delay time for swap selected elements (in milliseconds)
+    }
+  }
+
   // random initial board positions
   populateBoard() {
     this.clearBoard();
@@ -207,7 +219,7 @@ class GameBoard {
   }
 
   checkWinCondition() {
-    // Win pattern: No repeated elements in rows, columns, or main diagonal
+    // Win pattern: No repeated elements in rows, columns, or main and secondary diagonal
 
     // Check rows for a matching pattern
     for (let row = 0; row < this.board.length; row++) {
@@ -260,127 +272,50 @@ class GameBoard {
   // verify if end game condition is true => if so, animate victory!
   checkEndgameState() {
     if (this.checkWinCondition()) {
-      console.log("Congratulations! You won!");
-      this.explodeConfetti();
+      // console.log("Congratulations! You won!");
+      this.createConfettiExplosion();
       this.stopTimer();
       this.displayCongratulationMessage();
-    } else {
-      console.log("Keep trying. You haven't won yet.");
     }
+    // else {
+    //   console.log("Keep trying. You haven't won yet.");
+    // }
   }
 
-  // victory Animation!
-  explodeConfetti() {
-    // Create the confetti explosion using the canvas-confetti library
-    var duration = 15 * 1000;
-    var animationEnd = Date.now() + duration;
-    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+  initTimer() {
+    let seconds = 0;
+    let minutes = 0;
 
-    function randomInRange(min, max) {
-      return Math.random() * (max - min) + min;
-    }
+    const timerElement = document.getElementById("timer");
 
-    var interval = setInterval(function () {
-      var timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
+    function updateTimer() {
+      seconds++;
+      if (seconds === 60) {
+        seconds = 0;
+        minutes++;
       }
 
-      var particleCount = 50 * (timeLeft / duration);
-      // since particles fall down, start a bit higher than random
-      confetti(
-        Object.assign({}, defaults, {
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-        })
-      );
-      confetti(
-        Object.assign({}, defaults, {
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-        })
-      );
-    }, 250);
-  }
-
-  displayCongratulationMessage() {
-    this.congratulationsText = document.getElementById("congratulations-h4");
-    this.congratulationsText.style.display = "block";
-
-    this.congratulationsTextDescription = document.getElementById(
-      "congratulations-p"
-    );
-    this.congratulationsTextDescription.style.display = "block";
-
-    this.createWhatsAppLink();
-  }
-
-  swapElements(row1, col1, row2, col2) {
-    const temp = this.board[row1][col1];
-    this.board[row1][col1] = this.board[row2][col2];
-    this.board[row2][col2] = temp;
-  }
-
-  handleElementSelection(domElement) {
-    // console.log(`element id: ${domElement.id}`);
-    // console.log(this.selectedElementsToSwap);
-
-    var elementsToSwap = this.selectedElementsToSwap; // max 2;
-
-    if (elementsToSwap.length === 0) {
-      // No elements are selected yet, selecting the first element to swap
-      var firstSelected = domElement;
-      // Selection animation
-      firstSelected.classList.add("selected");
-
-      // Add the first element to the selectedElementsToSwap array
-      this.selectedElementsToSwap.push(firstSelected);
-    } else if (elementsToSwap.length === 1) {
-      // One element is already selected, selecting the second element to swap
-      var secondSelected = domElement;
-      // Selection animation
-      secondSelected.classList.add("selected");
-
-      // Add the second element to the selectedElementsToSwap array
-      this.selectedElementsToSwap.push(secondSelected);
-
-      // Extract the row and column indices from the first and second DOM element IDs
-      const [_, row1, col1] = elementsToSwap[0].id.split("-").map(Number);
-      const [__, row2, col2] = elementsToSwap[1].id.split("-").map(Number);
-
-      // Add a small delay before clearing the selectedElementsToSwap array and the selection animation
-      setTimeout(() => {
-        // Perform the swapElements when two elements are selected
-        this.swapElements(row1, col1, row2, col2);
-
-        this.checkEndgameState();
-        // Clear the selectedElementsToSwap array and the selection animation
-        this.selectedElementsToSwap.forEach((el) =>
-          el.classList.remove("selected")
-        );
-        this.selectedElementsToSwap = [];
-
-        // Update the game board display
-        this.renderBoard();
-      }, 700); // Change the delay time (in milliseconds) as neededay
+      const formattedTime = `${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      timerElement.textContent = formattedTime;
     }
+
+    timerElement.intervalId = setInterval(updateTimer, 1000);
   }
 
-  // share via whatsApp
-  // JavaScript
-  createWhatsAppLink() {
-    // Venci em 00:07, e você? Aceita o desafio? <link>
-
-    var shareText = `Venci em ${this.stoppedTime}. E você? Aceita o desafio?!? https://mr2n8s.csb.app/`;
-    const whatsappLink = document.getElementById("whatsappLink");
-    const encodedText = encodeURIComponent(shareText);
-    whatsappLink.href = `https://api.whatsapp.com/send?text=${encodedText}`;
+  stopTimer() {
+    const timerElement = document.getElementById("timer");
+    clearInterval(timerElement.intervalId);
+    this.stoppedTime = timerElement.textContent;
   }
 
-  // debug methods:
+  /**
+ * Populates the board with a win condition pattern for testing purposes.
+ * This function resets the board to null and then fills it with elements based on the pattern.
+ * After populating the board, it renders the updated board.
+ */
   hackBoard() {
-    // console.log("a function to populate a win condition. for testing porpouses");
     this.clearBoard(); // reset board to null
 
     const patterns = PIECES_MAP.resolution;
@@ -396,6 +331,67 @@ class GameBoard {
 
   createEmptyBoard() {
     return Array.from({ length: 4 }, () => Array(4).fill(null));
+  }
+
+  createConfettiExplosion() {
+    const confettiExplosion = new ConfettiExplosion();
+    confettiExplosion.explode();
+  }
+
+  displayElement(elementId) {
+    const element = document.getElementById(elementId);
+    element.style.display = "block";
+  }
+
+  displayCongratulationMessage() {
+    this.displayElement("congratulations-h4");
+    this.displayElement("congratulations-p");
+
+    this.createWhatsAppLink();
+  }
+
+  // share via whatsApp
+  createWhatsAppLink() {
+    // Venci em 00:07, e você? Aceita o desafio? <link>
+
+    var shareText = `Venci em ${this.stoppedTime}. E você? Aceita o desafio? https://mr2n8s.csb.app/`;
+    const whatsappLink = document.getElementById("whatsappLink");
+    const encodedText = encodeURIComponent(shareText);
+    whatsappLink.href = `https://api.whatsapp.com/send?text=${encodedText}`;
+  }
+}
+
+class ConfettiExplosion {
+  constructor(duration = 15 * 1000) {
+    this.duration = duration;
+    this.defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+  }
+
+  explode() {
+    const animationEnd = Date.now() + this.duration;
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / this.duration);
+      const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+      confetti(
+        Object.assign({}, this.defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        })
+      );
+      confetti(
+        Object.assign({}, this.defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        })
+      );
+    }, 250);
   }
 }
 

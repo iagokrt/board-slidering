@@ -39,18 +39,6 @@ button:hover {
   cursor: pointer;
 }
 
-.flex {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/** debug menu**/
-.container {
-  position: relative;
-}
-
 .button {
   border-radius: 9px;
   color: #0f0e0e;
@@ -64,9 +52,27 @@ button:hover {
   cursor: pointer;
 }
 
+.flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  position: relative;
+}
+
+/** debug menu **/
+.debug-menu {
+  position: absolute;
+  transform: scale(0.8);
+  top: 0;
+  left: 0;
+}
 h1#debugMenu {
   color: white;
-  background-color: rgb(187, 66, 66);
+  background-color: #BB4242;
   text-align: center;
   border-radius: 8px;
   padding: 14px 6px;
@@ -85,13 +91,7 @@ h1#debugMenu:hover {
   border: 1px solid #ccc;
   padding: 10px;
 }
-
-#startGame:hover {
-  background-color: #D3D3D3;
-  box-shadow: 0 0 20px rgba(66, 165, 245, 1);
-}
-
-.container.show-settings .settings {
+.settings.show-settings {
   display: block;
 }
 
@@ -99,10 +99,17 @@ h1#debugMenu:hover {
   font-weight: bold;
   font-size: 12px;
   text-align: center;
-  /* text-transform: uppercase; */
 
   padding: 4px 12px;
 }
+
+
+/* Game */
+#startGame:hover {
+  background-color: #D3D3D3;
+  box-shadow: 0 0 20px rgba(66, 165, 245, 1);
+}
+
 
 .congratulations {
   text-align: center;

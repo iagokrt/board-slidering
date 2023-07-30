@@ -13,3 +13,6 @@
 
 # Environment variables file (optional if used)
 .env
+
+# ignoring jsdoc on dev
+jsdoc
