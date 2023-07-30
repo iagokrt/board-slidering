@@ -44,14 +44,13 @@ class GameBoard {
   }
 
   menuSettings() {
-    this.renderBoardButton = document.getElementById("renderBoardButton");
-    this.renderBoardButton.addEventListener("click", () => {
-      this.renderBoard();
-    });
+    const getElement = (id) => document.getElementById(id);
 
-    this.startGameButton = document.getElementById("startGame");
-    // this.introSection = document.getElementById("intro");
-    this.timerElement = document.getElementById("timer");
+    this.renderBoardButton = getElement("renderBoardButton");
+    this.renderBoardButton.addEventListener("click", this.renderBoard.bind(this));
+
+    this.startGameButton = getElement("startGame");
+    this.timerElement = getElement("timer");
     this.startGameButton.addEventListener("click", () => {
       this.populateBoard();
       this.startGameButton.style.display = "none";
@@ -59,12 +58,10 @@ class GameBoard {
       this.initTimer();
     });
 
-    this.populateGameButton = document.getElementById("populateGame");
-    this.populateGameButton.addEventListener("click", () => {
-      this.populateBoard();
-    });
+    this.populateGameButton = getElement("populateGame");
+    this.populateGameButton.addEventListener("click", this.populateBoard.bind(this));
 
-    this.attemptWinButton = document.getElementById("winnerWinner");
+    this.attemptWinButton = getElement("attemptWin");
     this.attemptWinButton.addEventListener("click", () => {
       if (this.checkEndgameState()) {
         console.log("Congratulations! You won!");
@@ -74,24 +71,23 @@ class GameBoard {
     });
 
     // Debug Functions
-    this.logEmptyBoardButton = document.getElementById("logEmptyBoard");
+    this.logEmptyBoardButton = getElement("logEmptyBoard");
     this.logEmptyBoardButton.addEventListener("click", () => {
       console.table(this.board);
     });
 
-    this.clearBoardButton = document.getElementById("clearBoard");
+    this.clearBoardButton = getElement("clearBoard");
     this.clearBoardButton.addEventListener("click", () => {
       this.clearBoard();
       console.log("board clear:");
       console.table(this.board);
     });
 
-    this.hackBoardButton = document.getElementById("hack");
-    this.hackBoardButton.addEventListener("click", () => {
-      this.hackBoard();
-    });
-    // interactions
-    this.swapElementsButton = document.getElementById("swap-elements");
+    this.hackBoardButton = getElement("hack");
+    this.hackBoardButton.addEventListener("click", this.hackBoard.bind(this));
+
+    // Interactions
+    this.swapElementsButton = getElement("swap-elements");
     this.swapElementsButton.addEventListener("click", () => {
       /**
        * Static Swap Test:
@@ -100,23 +96,22 @@ class GameBoard {
       this.swapElements(0, 0, 2, 2);
     });
 
-    // this.testGameButton = document.getElementById("test");
-    // this.testGameButton.addEventListener("click", () => {
-    //   // console.log("this:", this);
-    //   // console.log("Test!");
-    // });
-    // this.stopButton = document.getElementById("stop");
-    // this.stopButton.addEventListener("click", () => {
-    //   this.stopTimer();
-    // });
-
-    this.debugMenu = document.getElementById("debugMenu");
+    this.debugMenu = getElement("debugMenu");
     this.container = document.querySelector(".container");
 
     this.debugMenu.addEventListener("click", () => {
       this.container.classList.toggle("show-settings");
     });
+
+    // theme handler
+    this.themeToggleButton = document.querySelector('#toggle-theme span');
+    this.themeToggleButton.addEventListener('click', function () {
+      document.body.classList.toggle('dark-theme');
+      // Optionally, you can add logic to save the user's preference in LocalStorage.
+      // Example: localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+    });
   }
+
 
   initTimer() {
     let seconds = 0;
@@ -384,10 +379,6 @@ class GameBoard {
   }
 
   // debug methods:
-  /**
-   * Hijack board to align first case of possible winner positions
-   * there is more then one possible winner position because of permutations
-   */
   hackBoard() {
     // console.log("a function to populate a win condition. for testing porpouses");
     this.clearBoard(); // reset board to null

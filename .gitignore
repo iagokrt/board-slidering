@@ -1,0 +1,15 @@
+# Dependency directories
+/node_modules
+
+# Parcel cache and build output
+/.cache
+/dist
+
+# Yarn lock file
+/yarn.lock
+
+# Editor/IDE-specific files
+.vscode
+
+# Environment variables file (optional if used)
+.env
