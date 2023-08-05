@@ -30,14 +30,34 @@ var PIECES_MAP = {
   ]
 };
 
+var TUTORIAL_PIECES_MAP = {
+  // count distribution
+  count: {
+    "♤": 4,
+    "♧": 4,
+    "♢": 4,
+    "♡": 4
+  },
+  // mount board elements
+  availableElements: ["♤", "♧", "♢", "♡"],
+  // win patterns
+  resolution: [
+    ["♤", "♧", "♢", "♡"],
+    ["♡", "♢", "♧", "♤"],
+    ["♧", "♤", "♡", "♢"],
+    ["♢", "♡", "♤", "♧"]
+  ]
+};
+
 // matrix 4x4
 class GameBoard {
-  constructor() {
+  constructor(piecesMap) {
     this.board = this.createEmptyBoard();
-    this.availableElements = PIECES_MAP.availableElements;
+    this.availableElements = piecesMap.availableElements;
     this.selectedElementsToSwap = []; // store selected elements: max 2
     this.confettiContainer = document.getElementById("confettiContainer");
     this.menuSettings();
+    this.piecesMap = piecesMap; // Store the piecesMap
   }
 
   menuSettings() {
@@ -318,7 +338,7 @@ class GameBoard {
   hackBoard() {
     this.clearBoard(); // reset board to null
 
-    const patterns = PIECES_MAP.resolution;
+    const patterns = this.piecesMap.resolution;
     // Loop through the board and set the elements based on the pattern
     for (let row = 0; row < this.board.length; row++) {
       for (let col = 0; col < this.board[row].length; col++) {
@@ -395,4 +415,6 @@ class ConfettiExplosion {
   }
 }
 
-const game = new GameBoard();
+// const game = new GameBoard();
+const game = new GameBoard(PIECES_MAP);
+
