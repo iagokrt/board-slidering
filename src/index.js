@@ -7,9 +7,6 @@ import confetti from "canvas-confetti";
  * No equal elements in: rows, columns or diagonals
  * It's endgame
  */
-// this.availableElements = ["♤", "♧", "♢", "♡"];
-// this.availableElements = ["1", "2", "3", "4"];
-// this.availableElements = ["a", "b", "c", "d"];
 
 var PIECES_MAP = {
   // count distribution
@@ -30,34 +27,22 @@ var PIECES_MAP = {
   ]
 };
 
-var TUTORIAL_PIECES_MAP = {
-  // count distribution
-  count: {
-    "♤": 4,
-    "♧": 4,
-    "♢": 4,
-    "♡": 4
-  },
-  // mount board elements
-  availableElements: ["♤", "♧", "♢", "♡"],
-  // win patterns
-  resolution: [
-    ["♤", "♧", "♢", "♡"],
-    ["♡", "♢", "♧", "♤"],
-    ["♧", "♤", "♡", "♢"],
-    ["♢", "♡", "♤", "♧"]
-  ]
-};
-
 // matrix 4x4
 class GameBoard {
-  constructor(piecesMap) {
+  constructor(piecesMap, isTutorial = false) {
     this.board = this.createEmptyBoard();
     this.availableElements = piecesMap.availableElements;
     this.selectedElementsToSwap = []; // store selected elements: max 2
     this.confettiContainer = document.getElementById("confettiContainer");
     this.menuSettings();
     this.piecesMap = piecesMap; // Store the piecesMap
+    this.isTutorial = isTutorial;
+    this.tutorialMode = isTutorial; // Store the tutorial mode
+  }
+
+   // Function to set the tutorial mode
+   setTutorialMode(isTutorial) {
+    this.tutorialMode = isTutorial;
   }
 
   menuSettings() {
@@ -65,13 +50,26 @@ class GameBoard {
 
     this.renderBoardButton = getElement("renderBoardButton");
     this.renderBoardButton.addEventListener("click", this.renderBoard.bind(this));
-
     this.startGameButton = getElement("startGame");
-    this.timerElement = getElement("timer");
+    this.tutorialButton = getElement("startTutorial");
+
+    // event listeners
+
     this.startGameButton.addEventListener("click", () => {
       this.populateBoard();
       this.startGameButton.style.display = "none";
-      this.timerElement.style.display = "block";
+      this.tutorialButton.style.display = "none";
+      getElement("timer").style.display = "block";
+      this.initTimer();
+    });
+
+    this.tutorialButton.addEventListener("click", () => {
+      this.startGameButton.style.display = "none";
+      // this.tutorialMode = true;
+      this.setTutorialMode(true); // Enable Params
+      this.populateBoard();
+      // this.tutorialButton.style.display = "none";
+      getElement("timer").style.display = "block";
       this.initTimer();
     });
 
@@ -81,10 +79,6 @@ class GameBoard {
     // Game Interactions
     this.swapElementsButton = getElement("swap-elements");
     this.swapElementsButton.addEventListener("click", () => {
-      /**
-       * Static Swap Test:
-       * example: swap at positions (0, 0) and (2, 2);
-       */
       this.swapElements(0, 0, 2, 2);
     });
 
@@ -92,8 +86,6 @@ class GameBoard {
     this.themeToggleButton = document.querySelector('#toggle-theme span');
     this.themeToggleButton.addEventListener('click', function () {
       document.body.classList.toggle('dark-theme');
-      // Optionally, you can add logic to save the user's preference in LocalStorage.
-      // Example: localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
     });
 
     // Debug Functions
@@ -238,7 +230,31 @@ class GameBoard {
     this.renderBoard();
   }
 
+  tutorial() {
+    console.log(this.isTutorial)
+  }
+
+  checkTutorialCondition() {
+    // Check columns for a matching pattern
+    for (let col = 0; col < this.board.length; col++) {
+      const column = this.board.map(row => row[col]);
+      const colSet = new Set(column);
+
+      if (colSet.size === 1) {
+        console.log(`Win condition in column: ${col}`);
+        return true; // If all elements in a column are the same, it's a win condition
+      }
+    }
+    return false;
+  }
+
   checkWinCondition() {
+
+    if (this.isTutorial == true) {
+      // Win pattern: All elements in a column are the same, it's a win condition
+      return this.checkTutorialCondition();
+    }
+
     // Win pattern: No repeated elements in rows, columns, or main and secondary diagonal
 
     // Check rows for a matching pattern
@@ -291,8 +307,9 @@ class GameBoard {
 
   // verify if end game condition is true => if so, animate victory!
   checkEndgameState() {
+    console.log({'this.tutorialMode': this.tutorialMode})
     if (this.checkWinCondition()) {
-      // console.log("Congratulations! You won!");
+      // console.log("Congratulations! You completed tutorial!");
       this.createConfettiExplosion();
       this.stopTimer();
       this.displayCongratulationMessage();
@@ -379,6 +396,10 @@ class GameBoard {
     const encodedText = encodeURIComponent(shareText);
     whatsappLink.href = `https://api.whatsapp.com/send?text=${encodedText}`;
   }
+
+  logPiecesMap() {
+    console.log(this.piecesMap);
+  }
 }
 
 class ConfettiExplosion {
@@ -415,6 +436,5 @@ class ConfettiExplosion {
   }
 }
 
-// const game = new GameBoard();
-const game = new GameBoard(PIECES_MAP);
-
+const game = new GameBoard(PIECES_MAP, false); // tutorial mode: off
+// Set the tutorial mode to false or true, change game logic function process

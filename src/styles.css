@@ -50,8 +50,11 @@ button:hover {
   font-size: 20px;
   margin: 4px 2px;
   cursor: pointer;
+  width: 192px;
 }
-
+#startTutorial {
+  color: #333333;
+}
 .flex {
   display: flex;
   flex-direction: column;
@@ -207,12 +210,20 @@ body.dark-theme table td:hover {
   background: linear-gradient(to bottom, #0b2043, #0b2e39);
 }
 body.dark-theme #startGame {
-  background: #011f4b;
+  border: 0.8px solid white;
+  border-radius: 7px;
+  background: transparent;
   color: #fff;
 }
 body.dark-theme #startGame:hover {
   box-shadow: 0 0 18px rgba(66, 92, 245, 1);
   
+}
+body.dark-theme #startTutorial {
+  border: 0.8px solid white;
+  border-radius: 7px;
+  background: transparent;
+  color: grey;
 }
 
 /* Theme Slider  */
