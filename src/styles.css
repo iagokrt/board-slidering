@@ -20,6 +20,7 @@ body.hidden {
 
 main {
   display: flex;
+  flex-direction: column;
 }
 
 button {
@@ -54,6 +55,20 @@ button:hover {
 }
 #startTutorial {
   color: #333333;
+}
+#hint {
+  display: none;
+  max-width: 450px;
+  padding-top: 10px;
+}
+#hint p.paragraph {
+  color: #f1f1f1;
+  text-align: justify;
+  letter-spacing: .102rem;
+}
+#hint p.paragraph .back-btn:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 .flex {
   display: flex;
@@ -140,7 +155,7 @@ h1#debugMenu:hover {
 }
 
 table {
-  font-size: 2rem;
+  font-size: 3rem;
   color: #fff;
   background-color: #000111;
   padding: 14px;
@@ -223,7 +238,7 @@ body.dark-theme #startTutorial {
   border: 0.8px solid white;
   border-radius: 7px;
   background: transparent;
-  color: grey;
+  color: #cecece;
 }
 
 /* Theme Slider  */

@@ -40,8 +40,8 @@ class GameBoard {
     this.tutorialMode = isTutorial; // Store the tutorial mode
   }
 
-   // Function to set the tutorial mode
-   setTutorialMode(isTutorial) {
+  // Function to set the tutorial mode
+  setTutorialMode(isTutorial) {
     this.tutorialMode = isTutorial;
   }
 
@@ -65,13 +65,22 @@ class GameBoard {
 
     this.tutorialButton.addEventListener("click", () => {
       this.startGameButton.style.display = "none";
-      // this.tutorialMode = true;
+      getElement("hint").style.display = "block";
       this.setTutorialMode(true); // Enable Params
       this.populateBoard();
-      // this.tutorialButton.style.display = "none";
       getElement("timer").style.display = "block";
       this.initTimer();
     });
+
+    this.backButton = getElement("backButton");
+    this.backButton.addEventListener("click", () => {
+      this.startGameButton.style.display = "block";
+      getElement("hint").style.display = "none";
+      getElement("timer").style.display = "none";
+
+      this.setTutorialMode(false); // Enable Params
+      // this.createEmptyBoard();
+    })
 
     this.populateGameButton = getElement("populateGame");
     this.populateGameButton.addEventListener("click", this.populateBoard.bind(this));
@@ -84,8 +93,17 @@ class GameBoard {
 
     // theme handler
     this.themeToggleButton = document.querySelector('#toggle-theme span');
-    this.themeToggleButton.addEventListener('click', function () {
+
+    this.themeNumber = 0
+    this.themeToggleButton.addEventListener('click', () => {
       document.body.classList.toggle('dark-theme');
+      this.themeNumber++;
+      this.eg();
+    });
+
+    this.debugMenuButtonEg = getElement("debugMenuEg");
+    this.debugMenuButtonEg.addEventListener("click", () => {
+      this.debugMenuSettingsElement.classList.toggle("show-settings");
     });
 
     // Debug Functions
@@ -120,6 +138,18 @@ class GameBoard {
       }
     });
 
+  }
+
+  eg() {
+    // console.log(this.themeNumber)
+    if (this.themeNumber >= 25) {
+      this.timeBd = document.getElementById('timer').innerHTML;
+      this.enablerButton = document.getElementById('debugMenuEg');
+      if(this.timeBd == "00:05") {
+        this.clearBoard();
+        this.enablerButton.style.display = 'block';
+      }
+    }
   }
 
   handleClickEvent(event) {
@@ -235,26 +265,20 @@ class GameBoard {
   }
 
   checkTutorialCondition() {
-    // Check columns for a matching pattern
+    // Win pattern: Check columns elements in a column are the same, it's a win condition
     for (let col = 0; col < this.board.length; col++) {
       const column = this.board.map(row => row[col]);
       const colSet = new Set(column);
 
       if (colSet.size === 1) {
         console.log(`Win condition in column: ${col}`);
-        return true; // If all elements in a column are the same, it's a win condition
+        return true;
       }
     }
     return false;
   }
 
   checkWinCondition() {
-
-    if (this.isTutorial == true) {
-      // Win pattern: All elements in a column are the same, it's a win condition
-      return this.checkTutorialCondition();
-    }
-
     // Win pattern: No repeated elements in rows, columns, or main and secondary diagonal
 
     // Check rows for a matching pattern
@@ -307,12 +331,23 @@ class GameBoard {
 
   // verify if end game condition is true => if so, animate victory!
   checkEndgameState() {
-    console.log({'this.tutorialMode': this.tutorialMode})
-    if (this.checkWinCondition()) {
-      // console.log("Congratulations! You completed tutorial!");
-      this.createConfettiExplosion();
-      this.stopTimer();
-      this.displayCongratulationMessage();
+    console.log({ 'this.tutorialMode': this.tutorialMode })
+
+    if (this.tutorialMode) {
+      // alert('tutorial checkEndgameState')
+      if (this.checkTutorialCondition()) {
+        // console.log("Congratulations! You completed tutorial!");
+        this.createConfettiExplosion();
+        this.stopTimer();
+        this.displayCongratulationMessage();
+      }
+    } else if (!this.tutorialMode) {
+      if (this.checkWinCondition()) {
+        // console.log("Congratulations! You completed the game!");
+        this.createConfettiExplosion();
+        this.stopTimer();
+        this.displayCongratulationMessage();
+      }
     }
     // else {
     //   console.log("Keep trying. You haven't won yet.");
