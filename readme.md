@@ -2,6 +2,10 @@
 
 Este é um jogo JavaScript chamado Quebra-Cabeça da Matriz. O jogo consiste em uma matriz 4x4 com quatro tipos de peças: ♤, ♧, ♢ e ♡. O objetivo é organizar as peças no tabuleiro de forma especifica por cada nível de dificuldade.
 
+### Preview
+
+![the-slidering-board-game](https://github.com/iagokrt/board-slidering/blob/develop/the-slidering.gif)
+
 ### Como Jogar
 
 Abra o arquivo index.html em seu navegador da web.
