@@ -89,12 +89,8 @@ h1#debugMenu:hover {
   position: relative;
 }
 #credits a {
-  color: #000111;
+  color: #fff;
   text-decoration: none;
-}
-#credits a:hover {
-  color:#0a6b92;
-  text-decoration: underline;
 }
 
 .settings {
@@ -257,11 +253,9 @@ body.dark-theme #hint p.paragraph {
 }
 body.dark-theme #credits a {
   color: #fff;
+  text-decoration: none;
 }
-body.dark-theme #credits a:hover  {
-  color:#135874;
-  text-decoration: underline;
-}
+
 /* Theme Slider  */
 #toggle-theme {
   position: absolute;
@@ -335,4 +329,16 @@ body.dark-theme .moon-icon {
 .sun-icon:hover {
   color:#135874;
   
+}
+
+/*test background graphics*/
+#background-video {
+  transform: scale(6.20);
+  position: fixed;
+  top: 260%;
+  left: 109%;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
 }

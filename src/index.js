@@ -149,9 +149,11 @@ class GameBoard {
     if (this.themeNumber >= 25) {
       this.timeBd = document.getElementById('timer').innerHTML;
       this.enablerButton = document.getElementById('debugMenuEg');
+      this.fishes = document.getElementById('background-video');
       if(this.timeBd == "00:05") {
         this.clearBoard();
         this.enablerButton.style.display = 'block';
+        this.fishes.style.left = '229%';
       }
     }
   }
