@@ -57,8 +57,14 @@ Se você deseja contribuir para o Quebra-Cabeça da Matriz ou adicionar novos re
 
 - ✅ Alternância de temas
     - Você pode alternar entre os temas claro e escuro clicando nos ícones de sol ☀ ou lua ☽ no canto superior direito.
+
+- ✅ Adição de Easter Egg
+
+- ✅ Melhoria na animação de transição entre duas peças, melhoria no texto de ajuda para o tutorial e melhorias em estilos
+
 - 🚧 Sistemas de Fases
-    - [ ]  Em desenvolvimento - estamos trabalhando para implementar fases tutorial entre outras features no jogo
+    - [x]  ✅ Fase tutorial versão beta
+    - [ ]  Em desenvolvimento - estamos trabalhando para implementar níveis de fase e entre outras features no jogo
 - Backlog
     - [ ]  Melhorar animações - ou - Arrastar para trocar
     - [ ]  multi-player (?)
@@ -68,6 +74,8 @@ Se você deseja contribuir para o Quebra-Cabeça da Matriz ou adicionar novos re
 ### Menu de Depuração
 
 O jogo inclui um menu de depuração com várias opções para testar e depurar o tabuleiro. Você pode abrir o menu de depuração clicando no botão "Abrir menu de depuração".
+
+O menu adicional também pode ser visto ou desativando a opção de display='none' ou encontrando o Easter Egg.
 
 - Manipulação do Tabuleiro
     - Registrar Tabuleiro: Exibir o estado atual do tabuleiro do jogo no console.
@@ -80,6 +88,19 @@ O jogo inclui um menu de depuração com várias opções para testar e depurar 
     - Tentar Condição de Vitória: Verificar se a configuração atual do tabuleiro é uma condição de vitória
 
 ---
+
+### Easter Egg
+
+O Easter egg consiste em você consegue abrir o menu de depuração, sem visualizar ou inserir códigos.
+
+Basta você alterar entre temas mais de 25 vezes.
+
+Após isso feito, você deve abrir o jogo e realizar a troca de tema exatamente quando o relógio cronometro estiver contando 5 segundos.
+
+Feito isso você já deve ver na tela o menu de depuração, utilizado para realizar o desenvolvimento e testes de cada funcionalidade presente no jogo
+
+---
+
 
 ### Licença
 
