@@ -333,7 +333,7 @@ body.dark-theme .moon-icon {
 
 /*test background graphics*/
 #background-video {
-  transform: scale(6.20);
+  /* transform: scale(6.20); */
   position: fixed;
   top: 260%;
   left: 109%;

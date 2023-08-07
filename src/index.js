@@ -153,7 +153,7 @@ class GameBoard {
       if(this.timeBd == "00:05") {
         this.clearBoard();
         this.enablerButton.style.display = 'block';
-        this.fishes.style.left = '229%';
+        // this.fishes.style.left = '229%';
       }
     }
   }
