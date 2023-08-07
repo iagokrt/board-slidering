@@ -36,7 +36,6 @@ class GameBoard {
     this.confettiContainer = document.getElementById("confettiContainer");
     this.menuSettings();
     this.piecesMap = piecesMap; // Store the piecesMap
-    this.isTutorial = isTutorial;
     this.tutorialMode = isTutorial; // Store the tutorial mode
   }
 
@@ -65,21 +64,27 @@ class GameBoard {
 
     this.tutorialButton.addEventListener("click", () => {
       this.startGameButton.style.display = "none";
+      this.tutorialButton.style.display = "none";
+
       getElement("hint").style.display = "block";
       this.setTutorialMode(true); // Enable Params
       this.populateBoard();
-      getElement("timer").style.display = "block";
-      this.initTimer();
+      // getElement("timer").style.display = "block";
+      // this.initTimer();
     });
 
     this.backButton = getElement("backButton");
     this.backButton.addEventListener("click", () => {
       this.startGameButton.style.display = "block";
       getElement("hint").style.display = "none";
-      getElement("timer").style.display = "none";
+      // getElement("timer").style.display = "none";
 
       this.setTutorialMode(false); // Enable Params
+      
+      this.table = document.querySelector('#board table')
+      this.table.style.display = 'none';
       // this.createEmptyBoard();
+      // console.log(this.table)
     })
 
     this.populateGameButton = getElement("populateGame");
@@ -141,7 +146,6 @@ class GameBoard {
   }
 
   eg() {
-    // console.log(this.themeNumber)
     if (this.themeNumber >= 25) {
       this.timeBd = document.getElementById('timer').innerHTML;
       this.enablerButton = document.getElementById('debugMenuEg');
@@ -235,7 +239,7 @@ class GameBoard {
 
         // Update the game board display
         this.renderBoard();
-      }, 700); // delay time for swap selected elements (in milliseconds)
+      }, 400); // delay time for swap selected elements (in milliseconds)
     }
   }
 
@@ -258,10 +262,6 @@ class GameBoard {
     }
 
     this.renderBoard();
-  }
-
-  tutorial() {
-    console.log(this.isTutorial)
   }
 
   checkTutorialCondition() {
@@ -338,8 +338,8 @@ class GameBoard {
       if (this.checkTutorialCondition()) {
         // console.log("Congratulations! You completed tutorial!");
         this.createConfettiExplosion();
-        this.stopTimer();
-        this.displayCongratulationMessage();
+        // this.stopTimer();
+        // this.displayCongratulationMessage();
       }
     } else if (!this.tutorialMode) {
       if (this.checkWinCondition()) {
@@ -407,7 +407,12 @@ class GameBoard {
 
   createConfettiExplosion() {
     const confettiExplosion = new ConfettiExplosion();
-    confettiExplosion.explode();
+
+    if (this.tutorialMode) {
+      confettiExplosion.tutorialExplode();
+    } else {
+      confettiExplosion.explode();
+    }
   }
 
   displayElement(elementId) {
@@ -416,10 +421,14 @@ class GameBoard {
   }
 
   displayCongratulationMessage() {
-    this.displayElement("congratulations-h4");
-    this.displayElement("congratulations-p");
-
-    this.createWhatsAppLink();
+    if (this.tutorialMode) {
+      this.displayElement("congratulations-tutorial");
+    } else {
+      this.displayElement("congratulations-h4");
+      this.displayElement("congratulations-p");
+      this.createWhatsAppLink();
+    }
+  
   }
 
   // share via whatsApp
@@ -469,6 +478,15 @@ class ConfettiExplosion {
       );
     }, 250);
   }
+
+  tutorialExplode() {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+
 }
 
 const game = new GameBoard(PIECES_MAP, false); // tutorial mode: off

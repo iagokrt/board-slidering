@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>board-slidering</title>
+  <title>the-slidering: Board Game</title>
   <meta charset="UTF-8" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no" />
@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Belanosima&family=Rubik:wght@400;600&display=swap"
     rel="stylesheet" />
+  <link rel="icon" href="puzzle.png" type="image/x-icon">
 </head>
 
 <body class="hidden dark-theme">
@@ -20,6 +21,9 @@
     </span>
     <span id="debugMenuEg" style="display: none;">
       debug menu
+    </span>
+    <span id="credits">
+      <a href="https://github.com/iagokrt" target="_blank">the-slidering</a>
     </span>
   </header>
   <div id="game">
@@ -32,11 +36,11 @@
             </button>
           </div>
         </aside>
-  
+
         <aside id="start-tutorial-button">
           <div class="main-menu flex">
             <button id="startTutorial" class="button" type="button">
-              Tutorial 
+              Tutorial
             </button>
           </div>
         </aside>
@@ -51,9 +55,11 @@
         </p>
         <p class="paragraph">
           <span>
-            Tente alinhar as peças formando um padrão. Nesse jogo, você precisa clicar em uma peça para seleção, e na proxima peça 
+            Tente alinhar as peças formando um padrão. Nesse jogo, você precisa clicar em uma peça para seleção, e na
+            proxima peça
             para trocar as posições entre elas. <br /><br />
-            O padrão do Jogo Normal não será o mesmo, e você precisará descobrir como alinhar as peças para zerar o jogo...
+            O padrão do Jogo Normal não será o mesmo, e você precisará descobrir como alinhar as peças para zerar o
+            jogo...
           </span>
         </p>
       </div>
@@ -91,6 +97,8 @@
         </aside>
       </aside>
 
+
+
       <!-- Game Board 'Canvas' -->
       <aside class="game-container">
         <h4 id="timer">00:00</h4>
@@ -105,7 +113,10 @@
               alt="whatsapp" />
           </a>
         </p>
-
+        <p class="congratulations" id="congratulations-tutorial">
+          Parabéns! Você concluiu o tutorial, agora tente descobrir como alinhar os elementos do jogo de maneira que
+          você <small>não se repita</small>
+        </p>
         <div id="board"></div>
       </aside>
     </main>

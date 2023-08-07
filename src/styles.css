@@ -53,23 +53,6 @@ button:hover {
   cursor: pointer;
   width: 192px;
 }
-#startTutorial {
-  color: #333333;
-}
-#hint {
-  display: none;
-  max-width: 450px;
-  padding-top: 10px;
-}
-#hint p.paragraph {
-  color: #f1f1f1;
-  text-align: justify;
-  letter-spacing: .102rem;
-}
-#hint p.paragraph .back-btn:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
 .flex {
   display: flex;
   flex-direction: column;
@@ -100,6 +83,19 @@ h1#debugMenu {
 h1#debugMenu:hover {
   cursor: pointer;
 }
+#credits {
+  padding: 7px;
+  top: -1px;
+  position: relative;
+}
+#credits a {
+  color: #000111;
+  text-decoration: none;
+}
+#credits a:hover {
+  color:#0a6b92;
+  text-decoration: underline;
+}
 
 .settings {
   display: none;
@@ -125,16 +121,32 @@ h1#debugMenu:hover {
 /* Game */
 #startGame:hover {
   background-color: #D3D3D3;
-  box-shadow: 0 0 20px rgba(66, 165, 245, 1);
+  box-shadow: 0 0 20px rgba(19, 88, 116, 1); 
 }
-
+#hint {
+  display: none;
+  max-width: 450px;
+  padding: 14px;
+}
+#hint p.paragraph {
+  /* color: #000; */
+  /* font-weight: bold; */
+  text-align: justify;
+  letter-spacing: .102rem;
+}
+#hint p.paragraph .back-btn:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
 
 .congratulations {
   text-align: center;
   color: #fff;
 }
 #congratulations-h4,
-#congratulations-p {
+#congratulations-p,
+#congratulations-tutorial
+{
   display: none;
 }
 
@@ -166,15 +178,15 @@ table td {
   color: #000;
 }
 table td:hover {
-  background: linear-gradient(to bottom, #5DC6C6, #30A7A7);
+  background: linear-gradient(to bottom, #5DC6C6, #07c6c6);
   cursor: pointer;
   transform: scale(1.08);
   transition: all 0.2s linear;
 }
 table td.selected {
-  background: linear-gradient(to bottom, #5DC6C6, #30A7A7);
+  background: linear-gradient(to bottom, #5DC6C6, #07c6c6);
   cursor: pointer;
-  transform: scale(1.05);
+  transform: scale(1.06);
   transition: all 0.2s linear;
   animation: floating 2s infinite;
 
@@ -231,16 +243,25 @@ body.dark-theme #startGame {
   color: #fff;
 }
 body.dark-theme #startGame:hover {
-  box-shadow: 0 0 18px rgba(66, 92, 245, 1);
+  box-shadow: 0 0 14px rgb(24, 166, 98);
   
 }
 body.dark-theme #startTutorial {
-  border: 0.8px solid white;
+  border: 0.8px solid #fff;
   border-radius: 7px;
   background: transparent;
-  color: #cecece;
+  color: #fff;
 }
-
+body.dark-theme #hint p.paragraph {
+  color: #f1f1f1;
+}
+body.dark-theme #credits a {
+  color: #fff;
+}
+body.dark-theme #credits a:hover  {
+  color:#135874;
+  text-decoration: underline;
+}
 /* Theme Slider  */
 #toggle-theme {
   position: absolute;
@@ -291,6 +312,7 @@ body.dark-theme #startTutorial {
 }
 
 .sun-icon, .moon-icon {
+  color: #fff; 
   font-size: 20px;
   padding: 5px;
 }
@@ -306,4 +328,11 @@ body.dark-theme .sun-icon {
 
 body.dark-theme .moon-icon {
   display: inline;
+}
+.moon-icon:hover {
+  color:#135874;
+}
+.sun-icon:hover {
+  color:#135874;
+  
 }
