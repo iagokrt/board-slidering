@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>the-slidering v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="puzzle.png" type="image/x-icon" />
+</head>
+
+<body>
+  <main class="v2-app">
+    <header>
+      <h1>the-slidering <small>v2</small></h1>
+      <p>Escolha um nível e um tamanho de tabuleiro.</p>
+    </header>
+
+    <section class="menu-card" id="mainMenu">
+      <h2>Menu principal</h2>
+
+      <div class="field">
+        <label for="modeSelect">Nível</label>
+        <select id="modeSelect">
+          <option value="easy-colored">Fácil — colorido desde o começo</option>
+          <option value="easy-progressive">Fácil progressivo — cores aparecem com o tempo</option>
+          <option value="hard">Difícil — sem distinção de cores</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="sizeSelect">Board</label>
+        <select id="sizeSelect">
+          <option value="4">Padrão 4x4</option>
+          <option value="6">Maior 6x6</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button id="startGameBtn">Iniciar jogo</button>
+        <button id="startTutorialBtn" class="secondary">Tutorial</button>
+      </div>
+
+      <p class="small-note">Dica: você ainda pode trocar peças por clique ou por drag-and-drop.</p>
+    </section>
+
+    <section class="game-card">
+      <div class="game-head">
+        <div>
+          <strong id="gameModeLabel">Modo: -</strong>
+          <p id="hintLabel">Hints: -</p>
+        </div>
+        <div>
+          <strong id="timer">00:00</strong>
+        </div>
+      </div>
+
+      <p id="tutorialText" class="tutorial-text hidden">
+        Tutorial v2: alinhe uma linha/coluna com peças iguais para ver a linha acender de verde.
+      </p>
+
+      <div id="board"></div>
+
+      <div class="actions bottom-actions">
+        <button id="backToMenu" class="secondary">Voltar ao menu</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="src/index-v2.js"></script>
+</body>
+
+</html>
