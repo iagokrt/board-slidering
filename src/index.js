@@ -33,6 +33,7 @@ class GameBoard {
     this.board = this.createEmptyBoard();
     this.availableElements = piecesMap.availableElements;
     this.selectedElementsToSwap = []; // store selected elements: max 2
+    this.draggedElementId = null;
     this.confettiContainer = document.getElementById("confettiContainer");
     this.menuSettings();
     this.piecesMap = piecesMap; // Store the piecesMap
@@ -163,6 +164,52 @@ class GameBoard {
     this.handleElementSelection(selectedElement);
   }
 
+  handleDragStart(event) {
+    const draggedCell = event.target;
+    this.draggedElementId = draggedCell.id;
+    draggedCell.classList.add("dragging");
+  }
+
+  handleDragOver(event) {
+    event.preventDefault();
+    event.target.classList.add("drag-over");
+  }
+
+  handleDragLeave(event) {
+    event.target.classList.remove("drag-over");
+  }
+
+  handleDrop(event) {
+    event.preventDefault();
+    const targetCell = event.target;
+    targetCell.classList.remove("drag-over");
+
+    if (!this.draggedElementId || targetCell.id === this.draggedElementId) {
+      return;
+    }
+
+    const [row1, col1] = this.parseElementCoordinates(this.draggedElementId);
+    const [row2, col2] = this.parseElementCoordinates(targetCell.id);
+
+    const draggedCell = document.getElementById(this.draggedElementId);
+    draggedCell.classList.add("swap-anim");
+    targetCell.classList.add("swap-anim");
+
+    setTimeout(() => {
+      this.swapElements(row1, col1, row2, col2);
+      this.checkEndgameState();
+      this.renderBoard();
+    }, 180);
+  }
+
+  handleDragEnd(event) {
+    event.target.classList.remove("dragging");
+    this.draggedElementId = null;
+    document.querySelectorAll(".drag-over").forEach((cell) => {
+      cell.classList.remove("drag-over");
+    });
+  }
+
   renderBoard() {
     // console.table(this.board);
 
@@ -180,9 +227,15 @@ class GameBoard {
         var td = document.createElement("td");
         td.textContent = this.board[row][col];
         td.id = `element-${row}-${col}`; // Set the id. used for interact
+        td.draggable = true;
 
         // Add a click event listener to each table cell
         td.addEventListener("click", this.handleClickEvent.bind(this));
+        td.addEventListener("dragstart", this.handleDragStart.bind(this));
+        td.addEventListener("dragover", this.handleDragOver.bind(this));
+        td.addEventListener("dragleave", this.handleDragLeave.bind(this));
+        td.addEventListener("drop", this.handleDrop.bind(this));
+        td.addEventListener("dragend", this.handleDragEnd.bind(this));
 
         tr.appendChild(td);
       }
@@ -206,6 +259,11 @@ class GameBoard {
     const temp = this.board[row1][col1];
     this.board[row1][col1] = this.board[row2][col2];
     this.board[row2][col2] = temp;
+  }
+
+  parseElementCoordinates(elementId) {
+    const parts = elementId.split("-");
+    return [Number(parts[1]), Number(parts[2])];
   }
 
   handleElementSelection(domElement) {
