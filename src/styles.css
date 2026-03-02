@@ -172,21 +172,37 @@ table td {
   padding: 18px;
   background: #b8d6d6;
   color: #000;
+  border: 2px solid #114b5f;
+  border-radius: 12px;
+  transition: transform 0.2s linear, background 0.2s linear, border-color 0.2s linear;
 }
 table td:hover {
   background: linear-gradient(to bottom, #5DC6C6, #07c6c6);
   cursor: pointer;
   transform: scale(1.08);
-  transition: all 0.2s linear;
+  border-color: #0a2f45;
 }
 table td.selected {
   background: linear-gradient(to bottom, #5DC6C6, #07c6c6);
   cursor: pointer;
   transform: scale(1.06);
-  transition: all 0.2s linear;
   animation: floating 2s infinite;
 
   /* 2 seconds duration, infinite loop */
+}
+
+table td.dragging {
+  opacity: 0.55;
+  transform: scale(0.95);
+}
+
+table td.drag-over {
+  border-color: #f5f7fa;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+table td.swap-anim {
+  animation: swapPulse 0.18s ease;
 }
 
 table * {
@@ -211,6 +227,18 @@ table * {
   }
 }
 
+@keyframes swapPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* game clock  */
 #timer {
   display: none; 
@@ -227,10 +255,14 @@ body.dark-theme {
 body.dark-theme table td {
   background-color: #135874;
   color: #fff;
+  border-color: #60b9dd;
 }
 body.dark-theme table td.selected,
 body.dark-theme table td:hover {
   background: linear-gradient(to bottom, #0b2043, #0b2e39);
+}
+body.dark-theme table td.drag-over {
+  border-color: #ffffff;
 }
 body.dark-theme #startGame {
   border: 0.8px solid white;
