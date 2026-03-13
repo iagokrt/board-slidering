@@ -14,11 +14,6 @@
 </head>
 
 <body class="hidden dark-theme">
-  <!-- <div id="background-video">
-    <iframe
-      src="https://www.youtube.com/embed/XVkADAwOXnU?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&playlist=XVkADAwOXnU"
-      frameborder="0" allowfullscreen></iframe>
-  </div> -->
   <header class="container" id="toggle-theme">
     <span>
       <span id="sun-icon" class="sun-icon">&#9728;</span>
@@ -29,8 +24,6 @@
     </span>
     <span id="credits">
       <a href="https://github.com/iagokrt" target="_blank">the-slidering</a>
-      <a href="index-v2.html" style="margin-left: 8px;" target="_blank">v2</a>
-
     </span>
   </header>
   <div id="game">
@@ -48,6 +41,14 @@
           <div class="main-menu flex">
             <button id="startTutorial" class="button" type="button">
               Tutorial
+            </button>
+          </div>
+        </aside>
+
+        <aside id="start-strategy-button">
+          <div class="main-menu flex">
+            <button id="startStrategyMode" class="button" type="button">
+              Busca aleatória vs Busca local
             </button>
           </div>
         </aside>
@@ -70,6 +71,30 @@
           </span>
         </p>
       </div>
+
+      <section id="strategy-mode">
+        <p class="paragraph">
+          <span class="back-btn" id="strategyBackButton">
+            <small>
+              &larr; voltar
+            </small>
+          </span>
+        </p>
+        <h3 id="strategy-title">Assistindo algoritmos resolverem o jogo</h3>
+        <p id="strategy-subtitle">Mesmo tabuleiro inicial, duas estratégias de busca.</p>
+        <div class="strategy-boards">
+          <aside class="strategy-panel">
+            <h4>Random Search</h4>
+            <p class="strategy-status" id="naiveStatus">Preparando...</p>
+            <div id="naiveBoard"></div>
+          </aside>
+          <aside class="strategy-panel">
+            <h4>Hill Climbing</h4>
+            <p class="strategy-status" id="heuristicStatus">Preparando...</p>
+            <div id="heuristicBoard"></div>
+          </aside>
+        </div>
+      </section>
 
       <aside class="debug-menu" id="debug-settings-menu">
         <h1 id="debugMenu" style="display: none;">Open debug menu</h1>

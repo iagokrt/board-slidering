@@ -8,6 +8,11 @@ import confetti from "canvas-confetti";
  * It's endgame
  */
 
+// 1 2 3 4
+// 4 3 2 1
+// 2 1 4 3
+// 3 4 1 2
+
 var PIECES_MAP = {
   // count distribution
   count: {
@@ -35,9 +40,9 @@ class GameBoard {
     this.selectedElementsToSwap = []; // store selected elements: max 2
     this.draggedElementId = null;
     this.confettiContainer = document.getElementById("confettiContainer");
-    this.menuSettings();
     this.piecesMap = piecesMap; // Store the piecesMap
     this.tutorialMode = isTutorial; // Store the tutorial mode
+    this.menuSettings();
   }
 
   // Function to set the tutorial mode
@@ -52,21 +57,22 @@ class GameBoard {
     this.renderBoardButton.addEventListener("click", this.renderBoard.bind(this));
     this.startGameButton = getElement("startGame");
     this.tutorialButton = getElement("startTutorial");
+    this.strategyModeButton = getElement("startStrategyMode");
+    this.strategyModeSection = getElement("strategy-mode");
+    this.strategyBackButton = getElement("strategyBackButton");
+    this.strategyShowcase = new StrategyShowcase(this.piecesMap);
 
     // event listeners
 
     this.startGameButton.addEventListener("click", () => {
       this.populateBoard();
-      this.startGameButton.style.display = "none";
-      this.tutorialButton.style.display = "none";
+      this.hideMainMenuButtons();
       getElement("timer").style.display = "block";
       this.initTimer();
     });
 
     this.tutorialButton.addEventListener("click", () => {
-      this.startGameButton.style.display = "none";
-      this.tutorialButton.style.display = "none";
-
+      this.hideMainMenuButtons();
       getElement("hint").style.display = "block";
       this.setTutorialMode(true); // Enable Params
       this.populateBoard();
@@ -74,16 +80,32 @@ class GameBoard {
       // this.initTimer();
     });
 
+    this.strategyModeButton.addEventListener("click", () => {
+      this.hideMainMenuButtons();
+      getElement("hint").style.display = "none";
+      getElement("timer").style.display = "none";
+      this.strategyModeSection.style.display = "block";
+      this.strategyShowcase.start();
+    });
+
+    this.strategyBackButton.addEventListener("click", () => {
+      this.strategyShowcase.stop();
+      this.strategyModeSection.style.display = "none";
+      this.showMainMenuButtons();
+    });
+
     this.backButton = getElement("backButton");
     this.backButton.addEventListener("click", () => {
-      this.startGameButton.style.display = "block";
+      this.showMainMenuButtons();
       getElement("hint").style.display = "none";
       // getElement("timer").style.display = "none";
 
       this.setTutorialMode(false); // Enable Params
       
       this.table = document.querySelector('#board table')
-      this.table.style.display = 'none';
+      if (this.table) {
+        this.table.style.display = 'none';
+      }
       // this.createEmptyBoard();
       // console.log(this.table)
     })
@@ -144,6 +166,18 @@ class GameBoard {
       }
     });
 
+  }
+
+  hideMainMenuButtons() {
+    this.startGameButton.style.display = "none";
+    this.tutorialButton.style.display = "none";
+    this.strategyModeButton.style.display = "none";
+  }
+
+  showMainMenuButtons() {
+    this.startGameButton.style.display = "block";
+    this.tutorialButton.style.display = "block";
+    this.strategyModeButton.style.display = "block";
   }
 
   eg() {
@@ -503,6 +537,407 @@ class GameBoard {
 
   logPiecesMap() {
     console.log(this.piecesMap);
+  }
+}
+
+class StrategyShowcase {
+  constructor(piecesMap) {
+    this.piecesMap = piecesMap;
+    this.naiveContainer = document.getElementById("naiveBoard");
+    this.heuristicContainer = document.getElementById("heuristicBoard");
+    this.naiveStatus = document.getElementById("naiveStatus");
+    this.heuristicStatus = document.getElementById("heuristicStatus");
+    this.naiveInterval = null;
+    this.heuristicInterval = null;
+    this.maxNaiveSteps = 10400;
+    this.maxHeuristicSteps = 1400;
+    this.heuristicAnimationMs = 120;
+    this.isHeuristicAnimating = false;
+  }
+
+  start() {
+    this.stop();
+
+    const initialBoard = this.createScrambledBoard(14);
+    this.naiveBoard = this.cloneBoard(initialBoard);
+    this.heuristicBoard = this.cloneBoard(initialBoard);
+
+    this.naiveSteps = 0;
+    this.heuristicSteps = 0;
+    this.naiveDone = false;
+    this.heuristicDone = false;
+    this.isHeuristicAnimating = false;
+
+    this.updateNaiveStatus("Iniciando...");
+    this.updateHeuristicStatus("Iniciando...");
+
+    this.renderStaticBoard(this.naiveBoard, this.naiveContainer);
+    this.renderStaticBoard(this.heuristicBoard, this.heuristicContainer);
+
+    this.naiveInterval = setInterval(() => this.stepNaive(), 20);
+    this.heuristicInterval = setInterval(() => this.stepHeuristic(), 150);
+  }
+
+  stop() {
+    clearInterval(this.naiveInterval);
+    clearInterval(this.heuristicInterval);
+    this.naiveInterval = null;
+    this.heuristicInterval = null;
+  }
+
+  stepNaive() {
+    if (this.naiveDone) {
+      return;
+    }
+
+    this.naiveSteps += 1;
+    const currentScore = this.boardScore(this.naiveBoard);
+    const swapToApply = this.getRandomSwapCoordinates();
+    this.swapElements(
+      this.naiveBoard,
+      swapToApply.from.row,
+      swapToApply.from.col,
+      swapToApply.to.row,
+      swapToApply.to.col
+    );
+    const projectedScore = this.boardScore(this.naiveBoard);
+
+    this.logStep("Naive", this.naiveSteps, {
+      action: "swap aleatorio",
+      cells: swapToApply,
+      scoreBefore: currentScore,
+      scoreAfter: projectedScore,
+      board: this.naiveBoard
+    });
+
+    this.renderStaticBoard(this.naiveBoard, this.naiveContainer);
+
+    if (this.checkWinCondition(this.naiveBoard)) {
+      this.naiveDone = true;
+      this.updateNaiveStatus(`Resolveu em ${this.naiveSteps} passos.`);
+      clearInterval(this.naiveInterval);
+      this.naiveInterval = null;
+      this.tryCelebrate();
+      return;
+    }
+
+    if (this.naiveSteps >= this.maxNaiveSteps) {
+      this.naiveDone = true;
+      this.updateNaiveStatus(`Nao resolveu ate ${this.maxNaiveSteps} passos.`);
+      clearInterval(this.naiveInterval);
+      this.naiveInterval = null;
+      this.tryCelebrate();
+      return;
+    }
+
+    this.updateNaiveStatus(`Tentando... passo ${this.naiveSteps}`);
+  }
+
+  stepHeuristic() {
+    if (this.heuristicDone || this.isHeuristicAnimating) {
+      return;
+    }
+
+    this.heuristicSteps += 1;
+    const currentScore = this.boardScore(this.heuristicBoard);
+    const bestSwap = this.getBestSwapByScore(this.heuristicBoard);
+    const swapToApply = bestSwap || this.getRandomSwapCoordinates();
+    const strategyName = bestSwap ? "greedy-swap" : "fallback-random";
+
+    const projectedBoard = this.cloneBoard(this.heuristicBoard);
+    this.swapElements(
+      projectedBoard,
+      swapToApply.from.row,
+      swapToApply.from.col,
+      swapToApply.to.row,
+      swapToApply.to.col
+    );
+    const projectedScore = this.boardScore(projectedBoard);
+
+    this.logStep("Heuristic", this.heuristicSteps, {
+      action: strategyName,
+      cells: swapToApply,
+      scoreBefore: currentScore,
+      scoreAfter: projectedScore,
+      board: projectedBoard
+    });
+
+    this.isHeuristicAnimating = true;
+    this.animateHeuristicSwap(swapToApply, () => {
+      this.swapElements(
+        this.heuristicBoard,
+        swapToApply.from.row,
+        swapToApply.from.col,
+        swapToApply.to.row,
+        swapToApply.to.col
+      );
+
+      this.renderStaticBoard(this.heuristicBoard, this.heuristicContainer);
+      this.isHeuristicAnimating = false;
+
+      if (this.checkWinCondition(this.heuristicBoard)) {
+        this.heuristicDone = true;
+        this.updateHeuristicStatus(`Resolveu em ${this.heuristicSteps} passos.`);
+        clearInterval(this.heuristicInterval);
+        this.heuristicInterval = null;
+        console.log('tryCelebrate');
+        this.tryCelebrate();
+        return;
+      }
+
+      if (this.heuristicSteps >= this.maxHeuristicSteps) {
+        this.heuristicDone = true;
+        this.updateHeuristicStatus(`Nao resolveu ate ${this.maxHeuristicSteps} passos.`);
+        clearInterval(this.heuristicInterval);
+        this.heuristicInterval = null;
+        this.tryCelebrate();
+        return;
+      }
+
+      this.updateHeuristicStatus(
+        `Tentando... passo ${this.heuristicSteps} (score ${this.boardScore(this.heuristicBoard)})`
+      );
+    });
+  }
+
+  tryCelebrate() {
+    if (this.naiveDone || this.heuristicDone) {
+      const confettiExplosion = new ConfettiExplosion(3000);
+      console.info('confettiExplosion.');
+      console.info(this.naiveDone || this.heuristicDone);
+
+      confettiExplosion.tutorialExplode();
+    }
+  }
+
+  updateNaiveStatus(message) {
+    this.naiveStatus.textContent = message;
+  }
+
+  updateHeuristicStatus(message) {
+    this.heuristicStatus.textContent = message;
+  }
+
+  logStep(agent, step, details) {
+    const lines = [
+      `[${agent}] step ${step}`,
+      `acao: ${details.action}`,
+      `celulas: (${details.cells.from.row}, ${details.cells.from.col}) <-> (${details.cells.to.row}, ${details.cells.to.col})`,
+      `score: ${details.scoreBefore} -> ${details.scoreAfter}`,
+      "",
+      this.formatBoard(details.board)
+    ];
+
+    console.info(lines.join("\n"));
+  }
+
+  formatBoard(board) {
+    const elementMap = this.getElementNumberMap();
+    return board
+      .map((row) =>
+        row
+          .map((value) => {
+            if (value === null || value === undefined || value === "") {
+              return "_";
+            }
+            return elementMap[value] || value;
+          })
+          .join(" ")
+      )
+      .join("\n");
+  }
+
+  getElementNumberMap() {
+    if (!this.elementNumberMap) {
+      this.elementNumberMap = {};
+      for (let i = 0; i < this.piecesMap.availableElements.length; i++) {
+        const element = this.piecesMap.availableElements[i];
+        this.elementNumberMap[element] = String(i + 1);
+      }
+    }
+
+    return this.elementNumberMap;
+  }
+
+  createScrambledBoard(scrambleSteps = 12) {
+    const base = this.cloneBoard(this.piecesMap.resolution);
+
+    for (let i = 0; i < scrambleSteps; i++) {
+      this.applyRandomSwap(base);
+    }
+
+    if (this.checkWinCondition(base)) {
+      this.applyRandomSwap(base);
+    }
+
+    return base;
+  }
+
+  cloneBoard(board) {
+    return board.map((row) => row.slice());
+  }
+
+  renderStaticBoard(board, container) {
+    container.innerHTML = "";
+    const table = document.createElement("table");
+
+    for (let row = 0; row < board.length; row++) {
+      const tr = document.createElement("tr");
+      for (let col = 0; col < board[row].length; col++) {
+        const td = document.createElement("td");
+        td.textContent = board[row][col];
+        td.dataset.row = String(row);
+        td.dataset.col = String(col);
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+
+    container.appendChild(table);
+  }
+
+  applyRandomSwap(board) {
+    const firstIndex = Math.floor(Math.random() * 16);
+    let secondIndex = Math.floor(Math.random() * 16);
+
+    while (secondIndex === firstIndex) {
+      secondIndex = Math.floor(Math.random() * 16);
+    }
+
+    const row1 = Math.floor(firstIndex / 4);
+    const col1 = firstIndex % 4;
+    const row2 = Math.floor(secondIndex / 4);
+    const col2 = secondIndex % 4;
+
+    this.swapElements(board, row1, col1, row2, col2);
+  }
+
+  getRandomSwapCoordinates() {
+    const firstIndex = Math.floor(Math.random() * 16);
+    let secondIndex = Math.floor(Math.random() * 16);
+
+    while (secondIndex === firstIndex) {
+      secondIndex = Math.floor(Math.random() * 16);
+    }
+
+    return {
+      from: { row: Math.floor(firstIndex / 4), col: firstIndex % 4 },
+      to: { row: Math.floor(secondIndex / 4), col: secondIndex % 4 }
+    };
+  }
+
+  animateHeuristicSwap(swap, onComplete) {
+    const fromCell = this.heuristicContainer.querySelector(
+      `td[data-row="${swap.from.row}"][data-col="${swap.from.col}"]`
+    );
+    const toCell = this.heuristicContainer.querySelector(
+      `td[data-row="${swap.to.row}"][data-col="${swap.to.col}"]`
+    );
+
+    if (!fromCell || !toCell) {
+      onComplete();
+      return;
+    }
+
+    fromCell.classList.add("selected", "swap-anim");
+    toCell.classList.add("selected", "swap-anim");
+
+    setTimeout(() => {
+      fromCell.classList.remove("selected", "swap-anim");
+      toCell.classList.remove("selected", "swap-anim");
+      onComplete();
+    }, this.heuristicAnimationMs);
+  }
+
+  swapElements(board, row1, col1, row2, col2) {
+    const temp = board[row1][col1];
+    board[row1][col1] = board[row2][col2];
+    board[row2][col2] = temp;
+  }
+
+  checkWinCondition(board) {
+    for (let row = 0; row < board.length; row++) {
+      const rowSet = new Set(board[row]);
+      if (rowSet.size !== board[row].length) {
+        return false;
+      }
+    }
+
+    for (let col = 0; col < board[0].length; col++) {
+      const column = board.map((row) => row[col]);
+      const colSet = new Set(column);
+      if (colSet.size !== board.length) {
+        return false;
+      }
+    }
+
+    const mainDiagonal = board.map((row, index) => row[index]);
+    const mainDiagonalSet = new Set(mainDiagonal);
+    if (mainDiagonalSet.size !== board.length) {
+      return false;
+    }
+
+    const secondaryDiagonal = board.map((row, index) => row[board.length - 1 - index]);
+    const secondaryDiagonalSet = new Set(secondaryDiagonal);
+    if (secondaryDiagonalSet.size !== board.length) {
+      return false;
+    }
+
+    return true;
+  }
+
+  boardScore(board) {
+    let score = 0;
+
+    for (let row = 0; row < board.length; row++) {
+      score += board[row].length - new Set(board[row]).size;
+    }
+
+    for (let col = 0; col < board[0].length; col++) {
+      const column = board.map((row) => row[col]);
+      score += column.length - new Set(column).size;
+    }
+
+    const mainDiagonal = board.map((row, index) => row[index]);
+    score += mainDiagonal.length - new Set(mainDiagonal).size;
+
+    const secondaryDiagonal = board.map((row, index) => row[board.length - 1 - index]);
+    score += secondaryDiagonal.length - new Set(secondaryDiagonal).size;
+
+    return score;
+  }
+
+  getBestSwapByScore(board) {
+    const currentScore = this.boardScore(board);
+    let bestScore = Number.POSITIVE_INFINITY;
+    let bestSwap = null;
+
+    for (let first = 0; first < 16; first++) {
+      for (let second = first + 1; second < 16; second++) {
+        const row1 = Math.floor(first / 4);
+        const col1 = first % 4;
+        const row2 = Math.floor(second / 4);
+        const col2 = second % 4;
+
+        const clone = this.cloneBoard(board);
+        this.swapElements(clone, row1, col1, row2, col2);
+        const score = this.boardScore(clone);
+
+        if (score < bestScore) {
+          bestScore = score;
+          bestSwap = {
+            from: { row: row1, col: col1 },
+            to: { row: row2, col: col2 }
+          };
+        }
+      }
+    }
+
+    if (bestScore > currentScore) {
+      return null;
+    }
+
+    return bestSwap;
   }
 }
 
